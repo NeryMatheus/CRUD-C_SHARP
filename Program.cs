@@ -1,4 +1,5 @@
 using CRUD_C_SHARP.data;
+using CRUD_C_SHARP.Source.students.controller;
 using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,5 +23,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Routes
+app.MapStudentRoutes();
 
 app.Run();
