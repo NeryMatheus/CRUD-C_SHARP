@@ -14,5 +14,11 @@ public static class StudentController
             var newStudent = await StudentService.AddStudent(request);
             return newStudent;
         });
+        
+        studentRoutes.MapGet("/all", async () =>
+        {
+            var students = await StudentService.GetAllStudents();
+            return students;
+        });
     }
 }

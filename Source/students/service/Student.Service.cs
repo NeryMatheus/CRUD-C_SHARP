@@ -21,4 +21,19 @@ public abstract class StudentService
         
         return new ResultBase("Student added successfully", "OK", 200);
     } 
+    
+    public static async Task<ApiResponse<List<ListAllStudents>>> GetAllStudents()
+    {
+        try
+        {
+            var students = await StudentRepository.GetAllStudents();
+            return students.Count == 0 
+                ? new ApiResponse<List<ListAllStudents>>(null, "No students found", "Not Content", 204) 
+                : new ApiResponse<List<ListAllStudents>>(students, "Students retrieved successfully", "Success", 200);
+        }
+        catch (Exception e)
+        {
+            return new ApiResponse<List<ListAllStudents>>(null, e.Message, "Internal Server Error", 500);
+        }
+    }
 }
