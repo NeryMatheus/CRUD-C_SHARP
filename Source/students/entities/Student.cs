@@ -6,8 +6,8 @@ namespace CRUD_C_SHARP.students.entities;
 public class Student
 {
     public Guid Id { get; init; }
-    public string Name { get; private set; }
-    public bool Active { get; private set; }
+    public string Name { get; set; }
+    public bool Active { get; set; }
 
     public Student(string name)
     {

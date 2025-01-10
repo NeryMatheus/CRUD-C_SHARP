@@ -33,12 +33,24 @@ public abstract class StudentRepository
             .ToList();
     }
     
-    public static async Task<ListStudents?> FindByName(Student student)
+    public static async Task<Student?> FindByName(Student student)
     {
         return await Db.Students
             .Where(x => x.Name.ToUpper() == student.Name.ToUpper())
             .Where(x => x.Active)
-            .Select(x => new ListStudents(x.Id, x.Name, x.Active))
+            .Select(x => new Student(x.Name))
             .FirstOrDefaultAsync();
     }
+    
+    public static async Task<Student?> FindById(Guid id)
+    {
+        return await Db.Students.FirstOrDefaultAsync(x => x.Id == id);
+    }
+    
+    public static async Task UpdateStudent(Student student)
+    {
+        Db.Students.Update(student);
+        await Db.SaveChangesAsync();
+    }
+        
 }
