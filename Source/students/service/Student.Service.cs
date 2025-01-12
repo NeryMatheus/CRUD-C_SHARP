@@ -37,16 +37,45 @@ public abstract class StudentService
         }
     }
     
-    public static async Task<ApiResponse<ListStudents>> GetStudentByName(string name)
+    public static async Task<ApiResponse<ListStudents?>> GetStudentByName(string name)
     {
+        ListStudents? listStudents = null;
         try
         {
             var students = await StudentRepository.FindByName(new Student(name));
-            
+
+            if (students != null)
+            {
+                listStudents = new ListStudents(students.Id, students.Name, students.Active);
+            }
+
             return students == null 
-                ? new ApiResponse<ListStudents>(null, "Student not found", "Not Found", 404) 
-                : new ApiResponse<ListStudents>(students, "Student retrieved successfully", "Success", 200);
+                ? new ApiResponse<ListStudents?>(null, "Student not found", "Not Found", 404) 
+                : new ApiResponse<ListStudents?>(listStudents, "Student retrieved successfully", "Success", 200);
         } catch (Exception e)
+        {
+            return new ApiResponse<ListStudents?>(null, e.Message, "Internal Server Error", 500);
+        }
+    }
+    
+    public static async Task<ApiResponse<ListStudents>> UpdateStudentRequest(Guid id, UpdateStudentRequest request)
+    {
+        try
+        {
+            var student = await StudentRepository.FindById(id);
+            
+            if (student == null)
+            {
+                return new ApiResponse<ListStudents>(null, "Student not found", "Not Found", 404);
+            }
+            
+            student.Name = request.Name;
+            
+            await StudentRepository.UpdateStudent(student);
+            
+            return new ApiResponse<ListStudents>(new ListStudents(student.Id, student.Name, student.Active), "Student updated successfully", "Success", 200);
+        }
+        catch (Exception e)
         {
             return new ApiResponse<ListStudents>(null, e.Message, "Internal Server Error", 500);
         }

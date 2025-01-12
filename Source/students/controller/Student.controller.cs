@@ -26,5 +26,11 @@ public static class StudentController
             var student = await StudentService.GetStudentByName(name);
             return student;
         });
+        
+        studentRoutes.MapPatch("/{id:guid}", async (Guid id, UpdateStudentRequest request) =>
+        {
+            var student = await StudentService.UpdateStudentRequest(id, request);
+            return student;
+        });
     }
 }
