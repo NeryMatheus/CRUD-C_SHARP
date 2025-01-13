@@ -86,4 +86,19 @@ public abstract class StudentService
             return new ApiResponse<ListStudents>(null, e.Message, "Internal Server Error", 500);
         }
     }
+
+    public static async Task<ApiResponse<ListStudents>> DeleteStudent(Guid id)
+    {
+        var student = await StudentRepository.FindById(id);
+            
+        if (student == null)
+        {
+            return new ApiResponse<ListStudents>(null, "Student not found", "Not Found", 404);
+        }
+
+        await StudentRepository.DeleteStudent(student);
+
+        return new ApiResponse<ListStudents>(null, "Student removed successfully", "No Content", 204);
+
+    }
 }

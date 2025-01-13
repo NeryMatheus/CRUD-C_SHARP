@@ -32,5 +32,11 @@ public static class StudentController
             var student = await StudentService.UpdateStudentRequest(id, request);
             return student;
         });
+
+        studentRoutes.MapDelete("{id}", async (Guid id) =>
+        {
+            var studentId = await StudentService.DeleteStudent(id);
+            return studentId;
+        });
     }
 }
