@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Learning\\Documents\\CSharp\\CRUD-C_SHARP\\CRUD-C_SHARP.csproj": {}
+    "C:\\Users\\Mathe\\Documents\\CSharp\\CRUD-C_SHARP\\CRUD-C_SHARP.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Learning\\Documents\\CSharp\\CRUD-C_SHARP\\CRUD-C_SHARP.csproj": {
+    "C:\\Users\\Mathe\\Documents\\CSharp\\CRUD-C_SHARP\\CRUD-C_SHARP.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Learning\\Documents\\CSharp\\CRUD-C_SHARP\\CRUD-C_SHARP.csproj",
+        "projectUniqueName": "C:\\Users\\Mathe\\Documents\\CSharp\\CRUD-C_SHARP\\CRUD-C_SHARP.csproj",
         "projectName": "CRUD-C_SHARP",
-        "projectPath": "C:\\Users\\Learning\\Documents\\CSharp\\CRUD-C_SHARP\\CRUD-C_SHARP.csproj",
-        "packagesPath": "C:\\Users\\Learning\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Learning\\Documents\\CSharp\\CRUD-C_SHARP\\obj\\",
+        "projectPath": "C:\\Users\\Mathe\\Documents\\CSharp\\CRUD-C_SHARP\\CRUD-C_SHARP.csproj",
+        "packagesPath": "C:\\Users\\Mathe\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Mathe\\Documents\\CSharp\\CRUD-C_SHARP\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Learning\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Mathe\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"

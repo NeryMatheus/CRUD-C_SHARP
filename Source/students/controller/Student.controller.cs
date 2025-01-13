@@ -9,7 +9,7 @@ public static class StudentController
     {
         var studentRoutes = app.MapGroup("student");
 
-        studentRoutes.MapPost("", async (AddStudentRequest request) =>
+        studentRoutes.MapPost("", async (AddStudentRequest? request) =>
         {
             var newStudent = await StudentService.AddStudent(request);
             return newStudent;

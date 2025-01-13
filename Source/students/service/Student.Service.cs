@@ -7,19 +7,25 @@ namespace CRUD_C_SHARP.Source.students.service;
 
 public abstract class StudentService
 {
-    public static async Task<ResultBase> AddStudent(AddStudentRequest request)
+    public static async Task<ApiResponse<ListStudents>> AddStudent(AddStudentRequest? request)
     {
-        var newStudent = new Student(request.Name);
-        var studentEntity = await StudentRepository.GetStudentByName(newStudent);
+        if (request == null || string.IsNullOrWhiteSpace(request.Name))
+            return new ApiResponse<ListStudents>(null, "Insert student first", "Not Content", 204);
         
-        if (studentEntity != null)
+        var newStudent = new Student(request.Name);
+        var studentExist = await StudentRepository.GetStudentByName(newStudent);
+        
+        if (studentExist != null)
         {
-            return new ResultBase("Student already exists", "Conflict", 409);
+            return new ApiResponse<ListStudents>(null, "Student already exists", "Conflict", 409);
         }
 
         await StudentRepository.AddStudentRepository(newStudent);
         
-        return new ResultBase("Student added successfully", "OK", 200);
+        var studentEntity = await StudentRepository.GetStudentByName(newStudent);
+        var studentReturn = new ListStudents(studentEntity!.Id, studentEntity.Name, studentEntity.Active);
+
+        return new ApiResponse<ListStudents>(studentReturn, "Student added successfully", "OK", 200);
     } 
     
     public static async Task<ApiResponse<List<ListStudents>>> GetAllStudents()

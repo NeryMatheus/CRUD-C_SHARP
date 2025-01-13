@@ -38,7 +38,6 @@ public abstract class StudentRepository
         return await Db.Students
             .Where(x => x.Name.ToUpper() == student.Name.ToUpper())
             .Where(x => x.Active)
-            .Select(x => new Student(x.Name))
             .FirstOrDefaultAsync();
     }
     
