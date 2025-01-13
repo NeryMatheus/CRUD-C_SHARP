@@ -20,5 +20,9 @@ public class Student
     {
         Name = name;
     }
-    
+
+    public void DeactivateStudent()
+    {
+        Active = false;
+    }
 }
