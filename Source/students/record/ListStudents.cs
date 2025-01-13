@@ -1,3 +1,3 @@
 namespace CRUD_C_SHARP.Source.students.record;
 
-public record ListStudents(Guid Id, string Name, bool Active);
+public record ListStudents(Guid Id, string Name);

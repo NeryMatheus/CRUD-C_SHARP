@@ -23,7 +23,7 @@ public abstract class StudentService
         await StudentRepository.AddStudentRepository(newStudent);
         
         var studentEntity = await StudentRepository.GetStudentByName(newStudent);
-        var studentReturn = new ListStudents(studentEntity!.Id, studentEntity.Name, studentEntity.Active);
+        var studentReturn = new ListStudents(studentEntity!.Id, studentEntity.Name);
 
         return new ApiResponse<ListStudents>(studentReturn, "Student added successfully", "OK", 200);
     } 
@@ -52,7 +52,7 @@ public abstract class StudentService
 
             if (students != null)
             {
-                listStudents = new ListStudents(students.Id, students.Name, students.Active);
+                listStudents = new ListStudents(students.Id, students.Name);
             }
 
             return students == null 
@@ -75,11 +75,11 @@ public abstract class StudentService
                 return new ApiResponse<ListStudents>(null, "Student not found", "Not Found", 404);
             }
             
-            student.Name = request.Name;
+            student.UpdateStudentName(request.Name);
             
             await StudentRepository.UpdateStudent(student);
             
-            return new ApiResponse<ListStudents>(new ListStudents(student.Id, student.Name, student.Active), "Student updated successfully", "Success", 200);
+            return new ApiResponse<ListStudents>(new ListStudents(student.Id, student.Name), "Student updated successfully", "Success", 200);
         }
         catch (Exception e)
         {

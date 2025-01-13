@@ -12,7 +12,9 @@ public abstract class StudentRepository
     
     public static async Task<Student?> GetStudentByName(Student student)
     {
-        return await Db.Students.FirstOrDefaultAsync(x => x.Name == student.Name);
+        return await Db.Students
+            .Where(s => s.Active)
+            .FirstOrDefaultAsync(x => x.Name == student.Name);
     }
     
     public static async Task AddStudentRepository(Student student)
@@ -29,7 +31,7 @@ public abstract class StudentRepository
             .ToListAsync();
 
         return activeStudents
-            .Select(student => new ListStudents(student.Id, student.Name, student.Active))
+            .Select(student => new ListStudents(student.Id, student.Name))
             .ToList();
     }
     
@@ -43,7 +45,7 @@ public abstract class StudentRepository
     
     public static async Task<Student?> FindById(Guid id)
     {
-        return await Db.Students.FirstOrDefaultAsync(x => x.Id == id);
+        return await Db.Students.SingleOrDefaultAsync(x => x.Id == id);
     }
     
     public static async Task UpdateStudent(Student student)
