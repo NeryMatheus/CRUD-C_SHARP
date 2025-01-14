@@ -1,4 +1,3 @@
-using CRUD_C_SHARP.Source.result;
 using CRUD_C_SHARP.Source.students.record;
 using CRUD_C_SHARP.Source.students.repository;
 using CRUD_C_SHARP.students.entities;
@@ -7,98 +6,139 @@ namespace CRUD_C_SHARP.Source.students.service;
 
 public abstract class StudentService
 {
-    public static async Task<ApiResponse<ListStudents>> AddStudent(AddStudentRequest? request)
+    private static async Task<object> FindByName(string name)
     {
-        if (request == null || string.IsNullOrWhiteSpace(request.Name))
-            return new ApiResponse<ListStudents>(null, "Insert student first", "Not Content", 204);
-        
-        var newStudent = new Student(request.Name);
-        var studentExist = await StudentRepository.GetStudentByName(newStudent);
-        
-        if (studentExist != null)
+        var studentEntity = await StudentRepository.FindByName(name);
+
+        if (studentEntity == null)
         {
-            return new ApiResponse<ListStudents>(null, "Student already exists", "Conflict", 409);
+            return studentEntity!;
         }
 
-        await StudentRepository.AddStudentRepository(newStudent);
-        
-        var studentEntity = await StudentRepository.GetStudentByName(newStudent);
-        var studentReturn = new ListStudents(studentEntity!.Id, studentEntity.Name);
+        return Results.NotFound("Student not found");
+    }
 
-        return new ApiResponse<ListStudents>(studentReturn, "Student added successfully", "OK", 200);
-    } 
-    
-    public static async Task<ApiResponse<List<ListStudents>>> GetAllStudents()
+    private static async Task<object> FindById(Guid id)
+    {
+        var studentEntity = await StudentRepository.FindById(id);
+
+        if (studentEntity == null)
+        {
+            return Results.NotFound("Student not found");
+        }
+
+        return studentEntity;
+    }
+
+    private static object HandleException(Exception e)
+    {
+        return Results.Problem(e.Message);
+    }
+
+    public static async Task<object> AddStudent(AddStudentRequest? request)
+    {
+        if (request == null || string.IsNullOrWhiteSpace(request.Name))
+            return Results.BadRequest("Student name is required");
+
+        var student = await FindByName(request.Name);
+
+        try
+        {
+            if (student == null)
+            {
+                Student? newStudent = new(request.Name);
+                await StudentRepository.AddStudentRepository(newStudent);
+                var returnStudent = new ListStudents(newStudent.Id, newStudent.Name);
+
+                return Results.Created($"/student/{returnStudent.Id}", returnStudent);
+            }
+
+            return Results.Conflict("Student already exists");
+        }
+        catch (Exception e)
+        {
+            return HandleException(e);
+        }
+    }
+
+    public static async Task<object> GetAllStudents()
     {
         try
         {
             var students = await StudentRepository.GetAllStudents();
-            return students.Count == 0 
-                ? new ApiResponse<List<ListStudents>>(null, "No students found", "Not Content", 204) 
-                : new ApiResponse<List<ListStudents>>(students, "Students retrieved successfully", "Success", 200);
+            return students.Count == 0
+                ? Results.NotFound("No students found")
+                : Results.Ok(students);
         }
         catch (Exception e)
         {
-            return new ApiResponse<List<ListStudents>>(null, e.Message, "Internal Server Error", 500);
+            return HandleException(e);
         }
     }
-    
-    public static async Task<ApiResponse<ListStudents?>> GetStudentByName(string name)
-    {
-        ListStudents? listStudents = null;
-        try
-        {
-            var students = await StudentRepository.FindByName(new Student(name));
 
-            if (students != null)
-            {
-                listStudents = new ListStudents(students.Id, students.Name);
-            }
-
-            return students == null 
-                ? new ApiResponse<ListStudents?>(null, "Student not found", "Not Found", 404) 
-                : new ApiResponse<ListStudents?>(listStudents, "Student retrieved successfully", "Success", 200);
-        } catch (Exception e)
-        {
-            return new ApiResponse<ListStudents?>(null, e.Message, "Internal Server Error", 500);
-        }
-    }
-    
-    public static async Task<ApiResponse<ListStudents>> UpdateStudentRequest(Guid id, UpdateStudentRequest request)
+    public static async Task<object> GetStudentById(Guid id)
     {
         try
         {
-            var student = await StudentRepository.FindById(id);
-            
-            if (student == null)
+            var result = await FindById(id);
+            if (result is Student student && student != null)
             {
-                return new ApiResponse<ListStudents>(null, "Student not found", "Not Found", 404);
+                var responseData = new ListStudents(student.Id, student.Name);
+                return Results.Ok(responseData);
             }
-            
-            student.UpdateStudentName(request.Name);
-            
-            await StudentRepository.UpdateStudent(student);
-            
-            return new ApiResponse<ListStudents>(new ListStudents(student.Id, student.Name), "Student updated successfully", "Success", 200);
+
+            return Results.NotFound("Student not found");
         }
         catch (Exception e)
         {
-            return new ApiResponse<ListStudents>(null, e.Message, "Internal Server Error", 500);
+            return HandleException(e);
         }
     }
 
-    public static async Task<ApiResponse<ListStudents>> DeleteStudent(Guid id)
+    public static async Task<object> UpdateStudentRequest(Guid id, UpdateStudentRequest request)
     {
-        var student = await StudentRepository.FindById(id);
-            
-        if (student == null)
+        try
         {
-            return new ApiResponse<ListStudents>(null, "Student not found", "Not Found", 404);
+            var result = await FindById(id);
+
+            if (result is Student student && student != null)
+            {
+                if (student.Name == request.Name)
+                    return Results.Conflict("Student name is the same!");
+
+
+                student.UpdateStudentName(request.Name);
+                await StudentRepository.UpdateStudent(student);
+
+                return Results.Ok(new ListStudents(student.Id, student.Name));
+            }
+
+            return Results.NotFound("Student not found");
         }
+        catch (Exception e)
+        {
+            return HandleException(e);
+        }
+    }
 
-        await StudentRepository.DeleteStudent(student);
+    public static async Task<object> DeleteStudent(Guid id)
+    {
+        try
+        {
+            var result = await FindById(id);
 
-        return new ApiResponse<ListStudents>(null, "Student removed successfully", "No Content", 204);
+            if (result is Student student && student != null)
+            {
+                await StudentRepository.DeleteStudent(student);
+                return Results.NoContent();
+            }
 
+            return Results.NotFound("Student not found");
+        }
+        catch (Exception e)
+        {
+            return HandleException(e);
+
+        }
     }
 }

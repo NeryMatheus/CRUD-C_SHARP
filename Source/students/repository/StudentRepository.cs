@@ -7,58 +7,42 @@ namespace CRUD_C_SHARP.Source.students.repository;
 
 public abstract class StudentRepository
 {
-    
     private static readonly AppDbContext Db = new();
-    private static readonly CancellationToken Ct;
-    
-    public static async Task<Student?> GetStudentByName(Student student)
-    {
-        return await Db.Students
-            .Where(s => s.Active)
-            .FirstOrDefaultAsync(x => x.Name == student.Name, Ct);
-    }
-    
-    public static async Task AddStudentRepository(Student student)
+
+    public static async Task AddStudentRepository(Student student, CancellationToken Ct = default)
     {
         await Db.Students.AddAsync(student, Ct);
         await Db.SaveChangesAsync(Ct);
     }
-    
-    public static async Task<List<ListStudents>> GetAllStudents()
+
+    public static async Task<List<ListStudents>> GetAllStudents(CancellationToken Ct = default)
     {
         var activeStudents = await Db.Students
             .Where(student => student.Active)
-            .Select(student => new { student.Id, student.Name, student.Active })
+            .Select(student => new { student.Id, student.Name })
             .ToListAsync(Ct);
 
-        return activeStudents
-            .Select(student => new ListStudents(student.Id, student.Name))
-            .ToList();
+        return [.. activeStudents.Select(student => new ListStudents(student.Id, student.Name))];
     }
-    
-    public static async Task<Student?> FindByName(Student student)
-    {
-        return await Db.Students
-            .Where(x => x.Name.ToUpper() == student.Name.ToUpper())
-            .Where(x => x.Active)
-            .FirstOrDefaultAsync(Ct);
-    }
-    
-    public static async Task<Student?> FindById(Guid id)
-    {
-        return await Db.Students.SingleOrDefaultAsync(x => x.Id == id, Ct);
-    }
-    
-    public static async Task UpdateStudent(Student student)
+
+    public static async Task<Student?> FindByName(string name, CancellationToken Ct = default) => await Db.Students
+        .Where(x => x.Active)
+        .SingleOrDefaultAsync(x => x.Name == name, Ct);
+
+    public static async Task<Student?> FindById(Guid id, CancellationToken Ct = default) => await Db.Students
+        .Where(x => x.Active)
+        .SingleOrDefaultAsync(x => x.Id == id, Ct);
+
+    public static async Task UpdateStudent(Student student, CancellationToken Ct = default)
     {
         Db.Students.Update(student);
         await Db.SaveChangesAsync(Ct);
     }
 
-    public static async Task DeleteStudent(Student student)
+    public static async Task DeleteStudent(Student student, CancellationToken Ct = default)
     {
         student.DeactivateStudent();
         await Db.SaveChangesAsync(Ct);
     }
-        
+
 }

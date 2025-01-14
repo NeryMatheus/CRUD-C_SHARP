@@ -14,20 +14,20 @@ public static class StudentController
             var newStudent = await StudentService.AddStudent(request);
             return newStudent;
         });
-        
+
         studentRoutes.MapGet("/all", async () =>
         {
             var students = await StudentService.GetAllStudents();
             return students;
         });
-        
-        studentRoutes.MapGet("/{name}", async (string name) =>
+
+        studentRoutes.MapGet("/{id}", async (Guid id) =>
         {
-            var student = await StudentService.GetStudentByName(name);
+            var student = await StudentService.GetStudentById(id);
             return student;
         });
-        
-        studentRoutes.MapPatch("/{id:guid}", async (Guid id, UpdateStudentRequest request) =>
+
+        studentRoutes.MapPatch("/{id}", async (Guid id, UpdateStudentRequest request) =>
         {
             var student = await StudentService.UpdateStudentRequest(id, request);
             return student;
